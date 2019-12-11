@@ -72,7 +72,7 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
     const studentsArray = readFile();
-    const studentsRemains = studentsArray.some(student => student._id != req.params.id)
+    const studentsRemains = studentsArray.find(student => student._id != req.params.id)
     if (studentsRemains.length < studentsArray.length) {
     fs.writeFileSync(filePath, JSON.stringify(studentsRemains))
     res.status(204).send("Deletion successful")
