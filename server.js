@@ -1,8 +1,9 @@
 const express = require("express");
-const router = require("./src/services/students")
+const server = express();
+const router = require("./src/services/students/")
 
 
-const server = express()
+
 
 const port = 3001;
 
