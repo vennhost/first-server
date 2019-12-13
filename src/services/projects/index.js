@@ -1,28 +1,50 @@
 const express = require("express");
 
-const fs = require("fs");
-const path = require("path");
+const {readFile, writeFile} = require("fs-extra");
+const {join} = require("path");
 
 const router = express.Router()
 
 
 
-const filePath = path.join(__dirname, "projects.json");
+const filePath = join(__dirname, "projects.json");
+const reviewPath = join(__dirname, "reviews.json");
 
 console.log(filePath)
-
+/* 
 const readFile = () => {
-    const buffer = fs.readFileSync(filePath);
+    const buffer = await readFile(filePath);
     const content = buffer.toString();
-    console.log(content);
     return JSON.parse(content)
-    console.log(mainFile);
-}
+    
+} */
+
+
+router.post("/:id/review", async (req, res, next) => {
+    const buffer = await readFile(reviewPath);
+    const content = buffer.toString();
+    const reviews = JSON.parse(content);
+
+    const newReview = {
+        ...req.body,
+        projectId: req.params.id,
+        _id: reviews.length +1,
+        date: new Date()
+    };
+    reviews.push(newReview);
+    await writeFile(reviewPath, JSON.stringify(reviews));
+    res.send(`Thanks for you review ${newReview._id}`)
+})
 
 
 
-router.get("/:id", (req, res) => {
-    const projects = readFile();
+router.get("/:id", async (req, res, next) => {
+    //const projects = readFile();
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
+
     const studentProjects = projects.find(project => project._id == req.params.id)
 
     if (studentProjects) {
@@ -32,37 +54,45 @@ router.get("/:id", (req, res) => {
     }
 });
 
-router.get("/", (req, res) => {
-    
-    res.send(readFile())
+router.get("/", async (req, res, next) => {
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
+    res.send(projects)
 });
 
-router.post("/", (req, res) => {
-    const projects = readFile()
+router.post("/", async (req, res, next) => {
+    //const projects = readFile()
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
 
     /* const emailCheck = studentsArray.find(student => {
         if (students)
     }) */
     const newProject = { ...req.body, _id: projects.length + 1, creationTime: new Date() };
     projects.push(newProject)
-    fs.writeFileSync(filePath, JSON.stringify(projects))
+    await writeFile(filePath, JSON.stringify(projects))
     res.status(201).send(`Projects ${newProject._id} was Created Successfully`)
     
 });
 
-router.put("/:id", (req, res) => {
-    
+router.put("/:id", async (req, res, next) => {
+    //const projects = readFile();
 
-    const projects = readFile();
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
 
-    const editedStudent = projects.find(project => project._id == req.params.id) 
+    const editedProject = projects.find(project => project._id == req.params.id) 
     
     if (editedProject)
    { 
     const mergedProject = Object.assign(editedProject, req.body)
     const position = studentsArray.indexOf(editedProject) 
     projects[position] = mergedProject  
-    fs.writeFileSync(filePath, JSON.stringify(projects))
+    await writeFile(filePath, JSON.stringify(projects))
     res.send(mergedProject)
 } else {
     res.status(404).send("Student not found")
@@ -70,11 +100,16 @@ router.put("/:id", (req, res) => {
     
 });
 
-router.delete("/:id", (req, res) => {
-    const projects = readFile();
+router.delete("/:id", async (req, res, next) => {
+    //const projects = readFile();
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
+
     const projectRemains = projects.find(project => project._id != req.params.id)
     if (projectRemains.length < projects.length) {
-    fs.writeFileSync(filePath, JSON.stringify(projectRemains))
+    await writeFile(filePath, JSON.stringify(projectRemains))
     res.status(204).send("Deletion successful")
     }
     else {

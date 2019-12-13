@@ -1,28 +1,49 @@
 const express = require("express");
-
-const fs = require("fs");
-const path = require("path");
-
+const multer = require("multer");
+const {readFile, writeFile} = require("fs-extra");
+const { join } = require("path");
 const router = express.Router()
 
 
 
-const filePath = path.join(__dirname, "students.json");
+const filePath = join(__dirname, "students.json");
+const uploadURL = join(__dirname, "../../../public/img/students/");
 
 console.log(filePath)
 
-const readFile = () => {
+const upload = multer({});
+
+/* const readFile = () => {
     const buffer = fs.readFileSync(filePath);
     const content = buffer.toString();
-    console.log(content);
     return JSON.parse(content)
-    console.log(mainFile);
-}
+   
+} */
+//image upload and download session
+router.post("/:id/upload", upload.single("image"), async (req, res, next) => {
+    const file = req.file;
+    const  filename= req.params.id.toString() + ".jpeg"
+    await writeFile(join(uploadURL, /* file.originalname */ filename), file.buffer);
+    console.log(req.file.originalname)
+    res.send("File Upload Successful")
+});
+
+router.get("/:fileName/download", async (req, res, next) => {
+    
+    const { fileName } = req.params
+    const buffer = await readFile(join(uploadURL, fileName));
+        res.send(buffer)
+    
+});
 
 
+//Student information Post session
 
-router.get("/:id", (req, res) => {
-    const studentsArray = readFile();
+router.get("/:id", async (req, res) => {
+    //const studentsArray = readFile();
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const studentsArray = JSON.parse(content)
     const studentId = studentsArray.find(student => student._id == req.params.id)
 
     if (studentId) {
@@ -32,28 +53,40 @@ router.get("/:id", (req, res) => {
     }
 });
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
     /* const studentsArray = readFile(filePath); */
-    res.send(readFile())
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const studentsArray = JSON.parse(content)
+    res.send(studentsArray)
 });
 
-router.post("/", (req, res) => {
-    const studentsArray = readFile()
+router.post("/", async (req, res) => {
+    //const studentsArray = readFile()
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const studentsArray = JSON.parse(content)
+
 
     /* const emailCheck = studentsArray.find(student => {
         if (students)
     }) */
     const newStudent = { ...req.body, _id: studentsArray.length + 1, createdOn: new Date() };
     studentsArray.push(newStudent)
-    fs.writeFileSync(filePath, JSON.stringify(studentsArray))
+    await writeFile(filePath, JSON.stringify(studentsArray))
     res.status(201).send(`Student ${newStudent._id} was Created Successfully`)
     
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
     
 
-    const studentsArray = readFile();
+   // const studentsArray = readFile();
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const studentsArray = JSON.parse(content)
 
     const editedStudent = studentsArray.find(student => student._id == req.params.id) 
     
@@ -62,7 +95,7 @@ router.put("/:id", (req, res) => {
     const mergedStudent = Object.assign(editedStudent, req.body)
     const position = studentsArray.indexOf(editedStudent) 
     studentsArray[position] = mergedStudent  
-    fs.writeFileSync(filePath, JSON.stringify(studentsArray))
+    await writeFile(filePath, JSON.stringify(studentsArray))
     res.send(mergedStudent)
 } else {
     res.status(404).send("Student not found")
@@ -70,11 +103,16 @@ router.put("/:id", (req, res) => {
     
 });
 
-router.delete("/:id", (req, res) => {
-    const studentsArray = readFile();
+router.delete("/:id", async (req, res) => {
+    // const studentsArray = readFile();
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const studentsArray = JSON.parse(content)
+
     const studentsRemains = studentsArray.find(student => student._id != req.params.id)
     if (studentsRemains.length < studentsArray.length) {
-    fs.writeFileSync(filePath, JSON.stringify(studentsRemains))
+    await writeFile(filePath, JSON.stringify(studentsRemains))
     res.status(204).send("Deletion successful")
     }
     else {
