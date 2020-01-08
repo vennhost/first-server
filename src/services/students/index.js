@@ -51,7 +51,7 @@ router.get("/:fileName/download", async (req, res, next) => {
 
 //Student information Post session
 
-router.get("/:id", async (req, res) => {
+/* router.get("/:id", async (req, res) => {
     //const studentsArray = readFile();
     const buffer = await readFile(filePath);
     const content = buffer.toString();
@@ -63,38 +63,51 @@ router.get("/:id", async (req, res) => {
     } else {
         res.status(404).send("student not found")
     }
-});
+}); */
 
-router.get("/", async (req, res) => {
-    /* const studentsArray = readFile(filePath); */
+/* router.get("/", async (req, res) => {
+    
 
     const buffer = await readFile(filePath);
     const content = buffer.toString();
     const studentsArray = JSON.parse(content)
     res.send(studentsArray)
-});
+}); */
 
 router.post("/", async (req, res) => {
-    //const studentsArray = readFile()
+    try {
+    const student = await Student.create({...req.body, createdDate: new Date()})
+    student.save()
+    res.send(student)
+    }
+    catch(err) {
+        res.send(err)
+    }
+
+   /*  //const studentsArray = readFile()
     const buffer = await readFile(filePath);
     const content = buffer.toString();
     const studentsArray = JSON.parse(content)
 
 
-    /* const emailCheck = studentsArray.find(student => {
-        if (students)
-    }) */
+    
     const newStudent = { ...req.body, _id: studentsArray.length + 1, createdOn: new Date() };
     studentsArray.push(newStudent)
     await writeFile(filePath, JSON.stringify(studentsArray))
-    res.status(201).send(`Student ${newStudent._id} was Created Successfully`)
+    res.status(201).send(`Student ${newStudent._id} was Created Successfully`) */
     
 });
 
 router.put("/:id", async (req, res) => {
     
+    const student = await Student.findByIdAndUpdate(req.params.id, { $set: {...req.body}})
 
-   // const studentsArray = readFile();
+    if (student) 
+        res.send("Updated Successfully")
+    else
+        res.send("Student Not Found")
+
+  /*  // const studentsArray = readFile();
 
     const buffer = await readFile(filePath);
     const content = buffer.toString();
@@ -108,15 +121,23 @@ router.put("/:id", async (req, res) => {
     const position = studentsArray.indexOf(editedStudent) 
     studentsArray[position] = mergedStudent  
     await writeFile(filePath, JSON.stringify(studentsArray))
-    res.send(mergedStudent)
-} else {
+    res.send(mergedStudent) */
+/* } else {
     res.status(404).send("Student not found")
-}
+} */
     
 });
 
 router.delete("/:id", async (req, res) => {
-    // const studentsArray = readFile();
+
+    const student = await Student.findByIdAndDelete(req.params.id)
+    if (student)
+        res.send("Deleted Successfully")
+
+    else    
+        res.send("Student Not Found")
+
+   /*  // const studentsArray = readFile();
 
     const buffer = await readFile(filePath);
     const content = buffer.toString();
@@ -129,7 +150,7 @@ router.delete("/:id", async (req, res) => {
     }
     else {
         res.status(404).send("Student Not Found")
-    }
+    } */
 });
 
 module.exports = router;

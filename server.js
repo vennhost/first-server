@@ -9,7 +9,7 @@ const studentSchema = require("./src/model/student")
 
 
 const cloud = "mongodb+srv://venn:123sanya@venncluster-ygcdx.azure.mongodb.net/studentInfo?retryWrites=true&w=majority"
-mongoose.connect(cloud, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(cloud, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true})
 .then(db => console.log("DB Connected"), err => console.log("Error in DB connection"))
 
 const port = 3001;

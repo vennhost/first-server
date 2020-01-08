@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const uniqueValidator = require('mongoose-unique-validator');
 
 const studentSchema = new mongoose.Schema({
     name: {
@@ -11,10 +12,17 @@ const studentSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
+    },
+    createdDate: {
+        type: Date,
+        required: false
     }
 
 })
+
+studentSchema.plugin(uniqueValidator);
 
 const studentList = mongoose.model("student", studentSchema)
 
