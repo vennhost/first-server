@@ -2,7 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const {readFile, writeFile} = require("fs-extra");
 const { join } = require("path");
-const router = express.Router()
+const router = express.Router();
+const Student = require("../../model/student")
 
 
 
@@ -19,6 +20,10 @@ const upload = multer({});
     return JSON.parse(content)
    
 } */
+
+const loadStudents = async () => {
+    return await Student.find()
+}
 //image upload and download session
 router.post("/:id/upload", upload.single("image"), async (req, res, next) => {
     const file = req.file;
@@ -27,6 +32,13 @@ router.post("/:id/upload", upload.single("image"), async (req, res, next) => {
     console.log(req.file.originalname)
     res.send("File Upload Successful")
 });
+
+
+router.get("/", async (req, res) => {
+    
+    res.send(await loadStudents())
+});
+
 
 router.get("/:fileName/download", async (req, res, next) => {
     
