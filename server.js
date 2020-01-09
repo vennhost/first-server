@@ -5,6 +5,7 @@ const projectRouter = require("./src/services/projects/");
 const uploadRouter = require("./src/services/files/");
 const mongoose = require("mongoose");
 const studentSchema = require("./src/model/student")
+const projectSchema = require("./src/model/project")
 
 
 

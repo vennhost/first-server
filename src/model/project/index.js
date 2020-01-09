@@ -1,23 +1,23 @@
 const mongoose = require("mongoose")
 const uniqueValidator = require('mongoose-unique-validator');
 
-const studentSchema = new mongoose.Schema({
-    name: {
+const projectSchema = new mongoose.Schema({
+    title: {
         type: String,
         required: true
     },
-    surname: {
+    description: {
         type: String,
         required: true
     },
-    country: {
-        type: String,
-        required: true
-    },
-    email: {
+    repoUrl: {
         type: String,
         required: true,
         unique: true
+    },
+    liveUrl: {
+        type: String,
+        required: true
     },
     createdDate: {
         type: Date,
@@ -26,8 +26,8 @@ const studentSchema = new mongoose.Schema({
 
 })
 
-studentSchema.plugin(uniqueValidator);
+projectSchema.plugin(uniqueValidator);
 
-const studentList = mongoose.model("student", studentSchema)
+const projects = mongoose.model("project", projectSchema)
 
-module.exports = studentList;
+module.exports = projects;

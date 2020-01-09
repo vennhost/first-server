@@ -39,6 +39,44 @@ router.get("/", async (req, res) => {
     res.send(await loadStudents())
 });
 
+/* router.get("/", async (req, res) => {
+    const students = await loadStudents()
+    const total = students.length
+
+    const limit = req.query.limit || 2
+    const start = req.query.start || 0
+
+    delete req.query.limit
+    delete req.query.start
+
+    for (let key in req.query) {
+        students = Student.find(q => q[key] == req.query[key])
+    }
+    res.send({
+        result: students.splice(start, limit),
+        total: total,
+        next: `http://localhost:3001/students?country=${req.query.country}${limit}`
+    })
+}); */
+
+router.get("/", async (req, res) => {
+
+    if (req.query.country)
+        return await Student.find({country: req.query.country})
+    
+    else
+        res.send("Not Found")
+});
+
+router.get("/:id", async (req, res) => {
+
+    const student = await Student.findById(req.params.id)
+    if (student)
+        res.send(student)
+    else
+        res.status(404).send("Not Found")
+});
+
 
 router.get("/:fileName/download", async (req, res, next) => {
     
@@ -99,6 +137,11 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
+
+    delete req.body.createdDate
+    delete req.body._id
+    delete req.body.__v
+
     
     const student = await Student.findByIdAndUpdate(req.params.id, { $set: {...req.body}})
 
