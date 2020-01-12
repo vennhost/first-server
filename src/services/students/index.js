@@ -4,6 +4,7 @@ const {readFile, writeFile} = require("fs-extra");
 const { join } = require("path");
 const router = express.Router();
 const Student = require("../../model/student")
+const Project = require("../../model/project")
 
 
 
@@ -195,5 +196,122 @@ router.delete("/:id", async (req, res) => {
         res.status(404).send("Student Not Found")
     } */
 });
+
+
+
+/* Project Routes */
+
+router.get("/:id/projects/:projId", async (req, res, next) => {
+
+    const project = await Project.findById(req.params.id)
+
+    res.send(project)
+    /* //const projects = readFile();
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
+
+    const studentProjects = projects.find(project => project._id == req.params.id)
+
+    if (studentProjects) {
+        res.send(studentProjects)
+    } else {
+        res.status(404).send("project not found")
+    } */
+});
+
+router.get("/:id/projects/", async (req, res, next) => {
+
+    const student = await Student.findById(req.params.id)
+
+    res.send(student.projects)
+
+    
+    /* const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
+    res.send(projects) */
+});
+
+router.post("/:id/projects", async (req, res, next) => {
+    const newProject = req.body
+    
+    try {
+    const project = await Student.findByIdAndUpdate(req.params.id, { $push: {projects: newProject} })
+    res.send(project)
+    }
+    catch(err) {
+        res.send(err)
+    }
+   /*  //const projects = readFile()
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
+
+    /* const emailCheck = studentsArray.find(student => {
+        if (students)
+    }) */
+    /*const newProject = { ...req.body, _id: projects.length + 1, creationTime: new Date() };
+    projects.push(newProject)
+    await writeFile(filePath, JSON.stringify(projects))
+    res.status(201).send(`Projects ${newProject._id} was Created Successfully`) */
+    
+});
+
+router.put("/:id", async (req, res, next) => {
+
+try {
+    const project = await Project.findByIdAndUpdate(req.params.id, req.body)
+
+    res.send("Updated!")
+}
+catch(err) {
+    res.send(err)
+}
+
+
+/*     //const projects = readFile();
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
+
+    const editedProject = projects.find(project => project._id == req.params.id) 
+    
+    if (editedProject)
+   { 
+    const mergedProject = Object.assign(editedProject, req.body)
+    const position = studentsArray.indexOf(editedProject) 
+    projects[position] = mergedProject  
+    await writeFile(filePath, JSON.stringify(projects))
+    res.send(mergedProject)
+} else {
+    res.status(404).send("Student not found")
+}
+    */ 
+});
+
+router.delete("/:id", async (req, res, next) => {
+
+    const project = await Project.findByIdAndDelete(req.params.id)
+    res.send("Deleted!")
+   /*  //const projects = readFile();
+
+    const buffer = await readFile(filePath);
+    const content = buffer.toString();
+    const projects = JSON.parse(content)
+
+    const projectRemains = projects.find(project => project._id != req.params.id)
+    if (projectRemains.length < projects.length) {
+    await writeFile(filePath, JSON.stringify(projectRemains))
+    res.status(204).send("Deletion successful")
+    }
+    else {
+        res.status(404).send("Student Not Found")
+    } */
+});
+
 
 module.exports = router;

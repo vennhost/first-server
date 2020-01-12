@@ -67,10 +67,13 @@ router.get("/", async (req, res, next) => {
         const projects = await Project.find({title: req.query.title})
         res.send(projects)
     }
+    else {
+        const projects = await Project.find({})
 
-    /* const projects = await Project.find({})
+        res.send(projects)
+    }
 
-    res.send(projects) */
+    
     /* const buffer = await readFile(filePath);
     const content = buffer.toString();
     const projects = JSON.parse(content)
@@ -105,10 +108,14 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
 
-
+try {
     const project = await Project.findByIdAndUpdate(req.params.id, req.body)
 
     res.send("Updated!")
+}
+catch(err) {
+    res.send(err)
+}
 
 
 /*     //const projects = readFile();
