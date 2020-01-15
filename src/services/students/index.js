@@ -1,5 +1,6 @@
 const express = require("express");
 const multer = require("multer");
+const db = require("../../../db")
 const {readFile, writeFile} = require("fs-extra");
 const { join } = require("path");
 const router = express.Router();
@@ -36,8 +37,10 @@ router.post("/:id/upload", upload.single("image"), async (req, res, next) => {
 
 
 router.get("/", async (req, res) => {
+    const response = await db.query("SELECT * FROM Students")
+    res.send(response.rows)
+    //res.send(await loadStudents())
     
-    res.send(await loadStudents())
 });
 
 /* router.get("/", async (req, res) => {
@@ -71,11 +74,14 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
 
-    const student = await Student.findById(req.params.id)
+    const response = await db.query("SELECT * FROM students WHERE _id = $1", [req.params.id])
+    res.send(response.rows)
+
+   /*  const student = await Student.findById(req.params.id)
     if (student)
         res.send(student)
     else
-        res.status(404).send("Not Found")
+        res.status(404).send("Not Found") */
 });
 
 
@@ -115,13 +121,24 @@ router.get("/:fileName/download", async (req, res, next) => {
 
 router.post("/", async (req, res) => {
     try {
+    const response = await db.query(
+        `INSERT INTO students (firstName, lastName, email, dateOfBirth) VALUES ($1,$2,$3,$4) RETURNING *`,
+        [req.body.firstname, req.body.lastname, req.body.email, req.body.dateofbirth])
+    
+        res.send(response.rows)
+    }
+    catch (err) {
+        console.log(err)
+    }
+
+    /* try {
     const student = await Student.create({...req.body, createdDate: new Date()})
     student.save()
     res.send(student)
     }
     catch(err) {
         res.send(err)
-    }
+    } */
 
    /*  //const studentsArray = readFile()
     const buffer = await readFile(filePath);

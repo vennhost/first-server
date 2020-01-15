@@ -1,5 +1,8 @@
 const express = require("express");
 const server = express();
+const db = require("./db")
+const dotenv = require("dotenv");
+dotenv.config();
 const router = require("./src/services/students/");
 const projectRouter = require("./src/services/projects/");
 const uploadRouter = require("./src/services/files/");
@@ -13,7 +16,7 @@ const cloud = "mongodb+srv://venn:123sanya@venncluster-ygcdx.azure.mongodb.net/s
 mongoose.connect(cloud, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true})
 .then(db => console.log("DB Connected"), err => console.log("Error in DB connection"))
 
-const port = 3001;
+
 
 server.use(express.json())
 
@@ -24,6 +27,6 @@ server.use("/files", uploadRouter)
 
 
 
-server.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
+server.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`)
 });
