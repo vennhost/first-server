@@ -128,6 +128,7 @@ router.post("/", async (req, res) => {
         res.send(response.rows)
     }
     catch (err) {
+        res.send(err)
         console.log(err)
     }
 
@@ -155,8 +156,16 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-
-    delete req.body.createdDate
+    try {
+    const response = await db.query("UPDATE students SET firstname = $1, lastname = $2, email = $3, dateofbirth = $4 WHERE _id = $5 RETURNING *", 
+    [req.body.firstname, req.body.lastname, req.body.email, req.body.dateofbirth, req.params.id])
+    res.send(response.rows)
+    }
+    catch(err) {
+        res.send(err)
+        console.log(err)
+    }
+    /* delete req.body.createdDate
     delete req.body._id
     delete req.body.__v
 
@@ -166,7 +175,7 @@ router.put("/:id", async (req, res) => {
     if (student) 
         res.send("Updated Successfully")
     else
-        res.send("Student Not Found")
+        res.send("Student Not Found") */
 
   /*  // const studentsArray = readFile();
 
