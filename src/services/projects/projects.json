@@ -1,1 +1,10 @@
-[{"name":"HTML CV","description":"My first HTML exercise","repoURL":"https://github.com/#","liveURL":"https://#","_id":1,"creationTime":"2019-12-11T22:58:32.311Z"}]
+[
+    {
+        "name": "HTML CV",
+        "description": "My first HTML exercise",
+        "repoURL": "https://github.com/#",
+        "liveURL": "https://#",
+        "_id": 1,
+        "creationTime": "2019-12-11T22:58:32.311Z"
+    }
+]

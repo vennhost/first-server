@@ -1,6 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const {readFile, writeFile} = require("fs-extra");
+const { readFile, writeFile } = require("fs-extra");
 const { join } = require("path");
 
 const router = express.Router()
@@ -25,11 +25,11 @@ router.post("/upload", upload.single("image"), async (req, res, next) => {
 
 
 router.get("/:fileName/download", async (req, res, next) => {
-    
+
     const { fileName } = req.params
     const buffer = await readFile(join(uploadURL, fileName));
-        res.send(buffer)
-    
+    res.send(buffer)
+
 });
 
 
